@@ -28,6 +28,7 @@ Use the openai completions api.
 3. Observability (a part of  the routing engine)
 	
     {
+
 		model,
 		provider,
 		input_tokens,
@@ -38,11 +39,14 @@ Use the openai completions api.
 		response_content (openai format, will only get if this feature is on),
 		timestamps,
 		latency,
+
 	}
 
 CONFIG SCHEMA:
 {
+
 	db_uri: optional,
+
 	provider_config: [
 		{
 			name: "user_defined_name. eg: azure_openai_dev",
@@ -52,9 +56,11 @@ CONFIG SCHEMA:
 			version:
 		}
 	],
+
 	fallback_config: [
 		
 	],
+
 	models: [
 		model1 : {
 			providers: [vertex, genai],
