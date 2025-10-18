@@ -26,17 +26,16 @@ Use the openai completions api.
 1. Request <-> Response translation engine.
 2. Routing engine.
 3. Observability (a part of  the routing engine)
-	{
+	
+    {
 		model,
 		provider,
 		input_tokens,
 		output_tokens,
 		input_cost,
 		output_cost,
-
 		request_content (openai format, will only get if this feature is on),
 		response_content (openai format, will only get if this feature is on),
-
 		timestamps,
 		latency,
 	}
