@@ -1,0 +1,73 @@
+Please read the spec document before reading this.
+
+## The app is divided into 3 broad parts:
+1. The gateway logic.
+2. The observability dashboard.
+3. The configuration file.
+
+### Gateway logic
+1. Request <-> Response translator.
+	- Very well defined. Only 3 cases.
+	- Input: Openai request + model. Output: Request in "model" supported format.
+	- Input: Response in "model" format. Output: Response in openai format.
+	- Input: Response stream in "model" format. Output: Response stream in openai format.
+
+2. Router.
+	- Very well defined again.
+	- Input: Config file + model + request. Output: Response in "model" format.
+	- This guarantees that if any provider for that model is available, you will get a response from that provider.
+	- If no provider is available for that model, you will get a response from a fallback model. All providers for all fallback models are checked.
+	- If there is "cascade_fallback" set, then if all providers of all fallback models are unavailable, then we will also check for the fallback's fallback models. 
+	Example: Say gemini 2.5 flash has only one fallback gpt 4.1. If all providers of gemini 2.5 flash are unavailable, and all providesr of gpt 4.1 are also unavailable, then we also go through gpt 4.1's fallback models and their providers.
+
+	Of course, the above only applies for models that can support the given token length.
+
+	This is useful if all the user cares about is a response.
+ 
+### Observability
+schema:
+```
+    {
+
+	model,
+	provider,
+	input_tokens,
+	output_tokens,
+	input_cost,
+	output_cost,
+	request_content (openai format, will only get if this feature is on),
+	response_content (openai format, will only get if this feature is on),
+	timestamps,
+	latency,
+}
+```
+
+## Config file.
+This will include a config schema validator.
+
+schema:
+```
+{
+
+	db_uri: optional,
+	provider_config: [
+		{
+			name: "user_defined_name. eg: azure_openai_dev",
+			type: enum("azure_oai", "openai", "vertex")
+			uri:
+			key:
+			version:
+		}
+	],
+	models: [
+		model1 : {
+			providers: [vertex, genai],
+			fallback_models: [gpt4.1, o3-mini]
+		}
+		gpt4.1 : {
+			providers: [azure openai, openai],
+			fallback_models: [gpt4.1, o3-mini]
+		}
+	]
+}
+```
